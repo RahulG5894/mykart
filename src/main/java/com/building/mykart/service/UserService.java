@@ -4,6 +4,7 @@ import com.building.mykart.model.User;
 import com.building.mykart.model.UserType;
 import com.building.mykart.model.request.AddUserRequest;
 import com.building.mykart.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,15 +26,19 @@ public class UserService {
 
     public boolean validateUser(Long userId) {
         Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent()) {
-            log.error("User is invalid");
-            return false;
+        if(user.isEmpty()) {
+            log.error("User not found!!");
+            throw new RuntimeException("User not found!!");
         }
         return true;
     }
 
     public List<User> getAllUserList() {
         return userRepository.findAll();
+    }
+
+    public User getUserByID(Long id) {
+        return userRepository.getReferenceById(id);
     }
 
     public User addUser(AddUserRequest request) {
@@ -55,5 +60,10 @@ public class UserService {
                 .address(request.getAddress())
                 .type(userType)
                 .build();
+    }
+
+    public User getLoggedInUserDetail(HttpServletRequest request) {
+        String loggedInUserName =  request.getUserPrincipal().getName();
+        return userRepository.findByUsername(loggedInUserName);
     }
 }

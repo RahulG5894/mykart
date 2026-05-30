@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class KartItemsDTO {
     private List<ItemDTO> items;
     private BigDecimal totalAmount;

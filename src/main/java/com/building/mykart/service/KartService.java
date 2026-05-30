@@ -1,36 +1,49 @@
 package com.building.mykart.service;
 
-import com.building.mykart.model.Item;
-import com.building.mykart.model.Kart;
+import com.building.mykart.model.*;
 import com.building.mykart.model.request.AddToKartRequest;
 import com.building.mykart.model.request.RemoveItemForm;
 import com.building.mykart.model.response.ItemDTO;
 import com.building.mykart.model.response.KartItemsDTO;
+import com.building.mykart.notification.EmailService;
 import com.building.mykart.repository.ItemRepository;
 import com.building.mykart.repository.KartRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class KartService {
+
     private final ItemRepository itemRepository;
     private final KartRepository kartRepository;
     private final UserService userService;
+    private final EmailService emailService;
+    private final OrderService orderService;
+
+    public List<Item> getItemsListInKart(Long userId) {
+        userService.validateUser(userId);
+        Kart kartItems = kartRepository.findByUserId(userId);
+        if(kartItems == null) return null;
+        List<Map<String, Object>> items = kartItems.getItems();
+        List<Item> itemList = new ArrayList<>();
+        for (Map<String, Object> item : items) {
+            long itemId = Integer.parseInt(item.get("itemId").toString());
+            itemList.add(itemRepository.getReferenceById(itemId));
+        }
+        return itemList;
+    }
 
     public KartItemsDTO getItemsInKart(Long userId) {
-        if(!userService.validateUser(userId)) {
-            throw new RuntimeException("User is undefined!");
-        }
+        userService.validateUser(userId);
         Kart kartItems = kartRepository.findByUserId(userId);
         if(kartItems == null) return null;
         List<Map<String, Object>> items = kartItems.getItems();
@@ -112,4 +125,15 @@ public class KartService {
         kartRepository.save(kartItems);
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    public String checkoutItemInKart(HttpServletRequest request) {
+        User user = userService.getLoggedInUserDetail(request);
+        KartItemsDTO kartItems = getItemsInKart(user.getId());
+        if (kartItems == null || kartItems.getItems() == null || kartItems.getItems().isEmpty()) {
+            throw new RuntimeException("Cart is empty");
+        }
+        orderService.createOrder(user, kartItems.getItems());
+        emailService.sendOrderDone(user.getEmail());
+        return "order placed successfully!!";
+    }
 }

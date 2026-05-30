@@ -2,6 +2,8 @@ package com.building.mykart.controller;
 
 import com.building.mykart.model.Item;
 import com.building.mykart.model.request.ItemDetails;
+import com.building.mykart.model.response.ItemDTO;
+import com.building.mykart.model.response.ItemListDTO;
 import com.building.mykart.service.ItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,7 +27,7 @@ public class ItemController {
     // Add Item
     @GetMapping
     @Operation(summary = "Get Items in Inventory", description = "Get Items in Inventory")
-    public List<Item> getItemInInventory() {
+    public List<ItemListDTO> getItemInInventory() {
         return itemService.getItemInInventory();
     }
 

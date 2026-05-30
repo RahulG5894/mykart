@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name="item")
+@Table(name = "item")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,4 +21,8 @@ public class Item {
     private String name;
     private BigDecimal price;
     private Double weight;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private User seller;
 }

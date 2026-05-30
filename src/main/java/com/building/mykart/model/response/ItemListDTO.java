@@ -11,22 +11,18 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class ItemDTO {
+public class ItemListDTO {
     private Long id;
     private String name;
     private BigDecimal price;
     private Double weight;
-    private Integer quantity;
-    private User seller;
 
-    public static ItemDTO convertToItemDTO(Item item, Integer quantity) {
-        return ItemDTO.builder()
+    public static ItemListDTO convertToItemListDTO(Item item) {
+        return ItemListDTO.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .price(item.getPrice())
                 .weight(item.getWeight())
-                .quantity(quantity)
-                .seller(item.getSeller())
                 .build();
     }
 
