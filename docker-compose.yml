@@ -11,6 +11,7 @@ services:
       - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./src/main/resources/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-Test}"]
       interval: 5s
@@ -29,7 +30,7 @@ services:
     environment:
       # .env uses localhost for local Gradle runs; inside Compose use the DB service name.
       DB_HOST: postgres
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_PROFILES_ACTIVE: docker
     ports:
       - "${SERVER_PORT:-8089}:${SERVER_PORT:-8089}"
     depends_on:
