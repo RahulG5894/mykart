@@ -1,0 +1,11 @@
+# Local dev only (e.g. Avast Mail Shield replaces Gmail TLS certificates).
+# Run with: --spring.profiles.active=local
+spring:
+  mail:
+    properties:
+      mail:
+        smtp:
+          ssl:
+            trust: "*"
+          starttls:
+            required: true

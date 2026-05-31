@@ -1,0 +1,14 @@
+# Docker / dev: trust SMTP TLS when a proxy or AV replaces Gmail certificates.
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  mail:
+    properties:
+      mail:
+        smtp:
+          ssl:
+            trust: "*"
+          starttls:
+            required: true
