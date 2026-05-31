@@ -133,7 +133,7 @@ public class KartService {
             throw new RuntimeException("Cart is empty");
         }
         orderService.createOrder(user, kartItems.getItems());
-        emailService.sendOrderDone(user.getEmail());
+        emailService.sendOrderDone("viveksah59@gmail.com");
         return "order placed successfully!!";
     }
 }
