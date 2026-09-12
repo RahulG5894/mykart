@@ -49,9 +49,10 @@ public class UserService {
     public User createUser(AddUserRequest request) {
         UserType userType = null;
         if(request.getType() != null) {
-            userType = Arrays.stream(UserType.values())
+            Optional<UserType> first = Arrays.stream(UserType.values())
                     .filter(i -> i.name().equalsIgnoreCase(request.getType()))
-                    .findFirst().get();
+                    .findFirst();
+            userType = first.orElse(null);
         }
         return User.builder()
                 .name(request.getName())

@@ -1,6 +1,5 @@
 package com.building.mykart.model.response;
 
-import com.building.mykart.model.Item;
 import lombok.*;
 
 import java.math.BigDecimal;

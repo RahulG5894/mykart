@@ -23,6 +23,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class KartService {
 
+    public static final String QUANTITY = "quantity";
     private final ItemRepository itemRepository;
     private final KartRepository kartRepository;
     private final UserService userService;
@@ -32,7 +33,7 @@ public class KartService {
     public List<Item> getItemsListInKart(Long userId) {
         userService.validateUser(userId);
         Kart kartItems = kartRepository.findByUserId(userId);
-        if(kartItems == null) return null;
+        if(kartItems == null) return Collections.emptyList();
         List<Map<String, Object>> items = kartItems.getItems();
         List<Item> itemList = new ArrayList<>();
         for (Map<String, Object> item : items) {
@@ -52,7 +53,7 @@ public class KartService {
         for(Iterator<Map<String, Object>> iter = items.iterator(); iter.hasNext();) {
             Map<String, Object> item = iter.next();
             long itemId = Integer.parseInt(item.get("itemId").toString());
-            int quantity = Integer.parseInt(item.get("quantity").toString());
+            int quantity = Integer.parseInt(item.get(QUANTITY).toString());
             Item prod = itemRepository.getReferenceById(itemId);
             totalAmount = totalAmount.add(prod.getPrice().multiply(BigDecimal.valueOf(quantity)));
             itemList.add(ItemDTO.convertToItemDTO(prod, quantity));
@@ -77,7 +78,7 @@ public class KartService {
             }
             kartItems.add(Map.of(
                     "itemId", item.get("itemId"),
-                    "quantity", item.get("quantity")
+                    QUANTITY, item.get(QUANTITY)
             ));
         }
         kart.setItems(kartItems);
@@ -89,9 +90,9 @@ public class KartService {
         for(Iterator<Map<String, Object>> iterator = items.iterator(); iterator.hasNext();) {
             Map<String, Object> currItems = iterator.next();
             if(Long.parseLong(currItems.get("itemId").toString()) == Long.parseLong(item.get("itemId").toString())) {
-                int currQty = Integer.parseInt(currItems.get("quantity").toString());
-                int addQty = Integer.parseInt(item.get("quantity").toString());
-                currItems.put("quantity", currQty+addQty);
+                int currQty = Integer.parseInt(currItems.get(QUANTITY).toString());
+                int addQty = Integer.parseInt(item.get(QUANTITY).toString());
+                currItems.put(QUANTITY, currQty+addQty);
                 return true;
             }
         }
@@ -107,16 +108,16 @@ public class KartService {
         for(Iterator<Map<String, Object>> iterator = items.iterator(); iterator.hasNext();) {
             Map<String, Object> item = iterator.next();
             if(Long.parseLong(item.get("itemId").toString()) == request.getItemId()) {
-                int currQty = Integer.parseInt(item.get("quantity").toString());
+                int currQty = Integer.parseInt(item.get(QUANTITY).toString());
                 if(currQty <= request.getQuantity()) {
                     iterator.remove();
                 } else {
-                    item.put("quantity", currQty-request.getQuantity());
+                    item.put(QUANTITY, currQty-request.getQuantity());
                 }
             }
         }
         kartItems.setItems(items);
-        if(kartItems.getItems().size() == 0) {
+        if(kartItems.getItems().isEmpty()) {
             log.debug("deleting the kart items...");
             kartRepository.delete(kartItems);
             return;

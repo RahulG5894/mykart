@@ -1,7 +1,6 @@
 package com.building.mykart.model.request;
 
 import com.building.mykart.model.Item;
-import com.building.mykart.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

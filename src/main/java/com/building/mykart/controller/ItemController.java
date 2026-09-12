@@ -1,8 +1,6 @@
 package com.building.mykart.controller;
 
-import com.building.mykart.model.Item;
 import com.building.mykart.model.request.ItemDetails;
-import com.building.mykart.model.response.ItemDTO;
 import com.building.mykart.model.response.ItemListDTO;
 import com.building.mykart.service.ItemService;
 import io.swagger.v3.oas.annotations.Operation;
